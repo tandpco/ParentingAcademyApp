@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/angular-media-player/dist/angular-media-player.min.js"></script>
+    <script src="lib/parse-angular-patch/dist/parse-angular.js"></script>
+    <script src="lib/ng-storekit/src/ng-storekit.js"></script>
+<!-- For native 
+<script src="lib/js/facebook-js-sdk.js"></script>
+-->
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+  </head>
+  <body>
+
+    <script type="text/ng-template" id="welcome.html">
+      <ion-view title="Welcome">
+
+        <div class="bg-image home-image"></div>
+        <ion-pane padding="true">
+        <div class="home-pane" ng-show="$currentUser">Welcome {{$currentUser.get("displayName")}}<br /><a ng-click="$logout()">Logout</a><br/><br>
+        <a class="pill-button" ui-sref="list">BROWSE TALKS</a></div>
+        <div class="home-pane" ng-hide="$currentUser">
+        <button class="button button-block facebook-login" ng-click="fbLogin()">
+          <i class="icon ion-social-facebook"></i>
+          Sign in with Facebook
+        </button>
+        <button class="button button-block regular-login" ui-sref="register">
+          Sign Up With Email
+        </button>
+        </div>
+
+        </ion-pane>
+
+        <!-- <ion-content padding="true" class="home-screen">
+          <div class="list list-inset">
+            <label class="item item-input item-floating-label">
+              <span class="input-label">First Name</span>
+              <input type="text" placeholder="First Name">
+            </label>
+            <label class="item item-input item-floating-label">
+              <span class="input-label">Last Name</span>
+              <input type="text" placeholder="Last Name">
+            </label>
+            <label class="item item-input item-floating-label">
+              <span class="input-label">Email</span>
+              <input type="text" placeholder="Email">
+            </label>
+            <button class="button button-full button-calm">
+              Register Account
+            </button>
+          </div>
+        </ion-content> -->
+      </ion-view>
+    </script>
+    <script type="text/ng-template" id="playback.html">
+      <ion-view title="Play">
+        <div class="bg-image"></div>
+        <ion-content padding="true" class="playback-content">
+          <div class="sexy-header" ui-sref="my">
+            <a><i class="icon ion-ios7-arrow-left"></i></a>
+            {{$talk.get('Name')}}
+          </div>
+          <ion-slide-box on-slide-changed="slideHasChanged($index,$slide)" show-pager="false" active-slide="$onslide">
+            <ion-slide ng-repeat="$piece in $pieces">
+              <div class="page-lift">
+                <p style="min-height:190px">{{$piece.get('Text')}}</p>
+
+              <audio media-player="$player" data-playlist="$audio">
+              </audio>
+              <div class="audio-player">
+                <div ng-click="$player.playPause()" class="player-control">
+                  <i class="icon ion-ios7-pause-outline" ng-show="$player.playing"></i>
+                  <i class="icon ion-ios7-play-outline" ng-show="!$player.playing"></i>
+                </div>
+                <div class="player-progress">
+                  <span>{{$player.formatTime}}</span>
+                  <div ng-style="{width:($player.loadPercent)+'%'}"></div>
+                  <div ng-style="{width:($player.currentTime/ $player.duration*100)+'%'}"></div>
+                  <span>{{$player.formatDuration}}</span>
+                </div>
+              </div>
+            </div>
+            </ion-slide>
+          </ion-slide-box>
+          <div class="sexy-footer">
+            <a ng-hide="$onslide==0" ng-click="$onslide = $onslide-1" class="left"><i class="icon ion-ios7-arrow-left"></i></a>
+            <div>
+              <strong>{{$slide}}</strong>/{{$pieces.length}}
+            </div>
+            <a ng-hide="countSlides() <= $onslide+1" ng-click="$onslide = $onslide+1" class="right"><i class="icon ion-ios7-arrow-right"></i></a>
+          </div>
+        </ion-content>
+      </ion-view>
+    </script>
+
+    <script type="text/ng-template" id="register.html">
+      <ion-view title="Register" style="background-color:#83c04a">
+        <ion-content padding="true">
+          <div class="sexy-header" ui-sref="list">
+            <a><i class="icon ion-ios7-arrow-left"></i></a>
+            Register
+          </div>
+          <div class="list special-form">
+            <label class="item item-input item-stacked-label">
+              <span class="input-label">Full Name</span>
+              <input type="text" placeholder="John Doe" ng-model="form.name">
+            </label>
+            <label class="item item-input item-stacked-label">
+              <span class="input-label">Email</span>
+              <input type="text" placeholder="johndoe@example.com" ng-model="form.email">
+            </label>
+            <label class="item item-input item-stacked-label">
+              <span class="input-label">Password</span>
+              <input type="password" ng-model="form.password">
+            </label>
+
+            <button class="button button-block regular-login-white" ng-click="$register()">
+              Complete Registration
+            </button>
+            <p style="color:#fff;text-align:center">{{form.error.message}}</p>
+          </div>
+        </div>
+        </ion-content>
+      </ion-view>
+    </script>
+    <script type="text/ng-template" id="list.html">
+      <ion-view title="Browse">
+        <a class="button icon-right ion-ios7-browsers button-clear button-dark" style="position:absolute;right:0;padding:10px 20px;color:#fff" ui-sref="my"></a>
+        <ul class="talk-list">
+            <li ui-sref="buy({objectId:$product.id})" ng-repeat="$product in $products" ng-style="{'background-image':'url('+$product.get('Image').url()+')'}"><div>{{$product.get('Name')}}</div></li>
+        </ul>
+      </ion-view>
+    </script>
+    <script type="text/ng-template" id="my.html">
+      <ion-view title="Browse" style="background-color:#83c04a">
+        <ion-content padding="true">
+          <div class="sexy-header" ui-sref="list">
+            <a><i class="icon ion-ios7-arrow-left"></i></a>
+            Your Purchases
+          </div>
+          <ul class="purchases">
+            <li ui-sref="playback({objectId:$product.id})" ng-repeat="$product in $products">
+              <a class="pill-button small-pill" style="float:right">LISTEN</a>
+              {{$product.get('Name')}}</li>
+          </ul>
+          <ul class="purchases" ng-show="$products && $products.length == 0"><li ui-sref="list"><a class="pill-button small-pill" style="float:right">Browse Store</a>No purchases yet.</li></ul>
+
+        </ion-content>
+      </ion-view>
+    </script>
+    <script type="text/ng-template" id="buy.html">
+      <ion-view title="Purchase Talk" style="background-color:#83c04a">
+        <ion-content padding="true">
+          <div class="sexy-header" ui-sref="list">
+            <a><i class="icon ion-ios7-arrow-left"></i></a>
+            Talk Description
+          </div>
+          <div class="purchase-box">
+            
+            <h2>{{$talk.get('Name')}}</h2>
+            <p>{{$talk.get('Description')}}</p>
+            <a class="pill-button" ng-click="$buy()" ng-hide="alreadyPurchased">{{$buying && $buying || 'BUY TALK - $0.99'}}</a>
+            <a class="pill-button" ui-sref="playback({objectId:$talk.id})" ng-show="alreadyPurchased">LISTEN NOW</a>
+          </div>
+
+        </div>
+        </ion-content>
+      </ion-view>
+    </script>
+    <!-- <ion-nav-bar class="bar-stable nav-title-slide-ios7">
+      <ion-nav-back-button class="button-icon icon  ion-ios7-arrow-back">
+        Back
+      </ion-nav-back-button>
+    </ion-nav-bar> -->
+    <ion-nav-view animation="slide-left-right">
+      <!-- Center content -->
+    </ion-nav-view>
+    <div class="tabs tabs-icon-only" id="footer-tabs">
+      <a class="tab-item" ui-sref="welcome">
+        <i class="icon ion-clipboard"></i>
+        Register
+      </a>
+      <a class="tab-item" ui-sref="playback">
+        <i class="icon ion-ios7-volume-high"></i>
+        Audio
+      </a>
+      <a class="tab-item" ui-sref="list">
+        <i class="icon ion-ios7-cart-outline"></i>
+        Audio
+      </a>
+      <a class="tab-item">
+        <i class="icon ion-gear-a"></i>
+        Account
+      </a>
+    </div>
+    <div id="fb-root"></div>
+    <script src="js/facebookConnectPlugin.js"></script>
+    <script src="js/parse-1.3.0.min.js"></script>
+  </body>
+</html>
