@@ -22,3 +22,8 @@ $ git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git
 # Remember to replace APP_ID and APP_NAME variables
 $ cordova -d plugin add /path/to/cloned/phonegap-facebook-plugin --variable APP_ID=870753449624866 --variable APP_NAME="Parenting Academy"
 ```
+
+# Running
+Read this tutorial: [http://ionicframework.com/docs/guide/testing.html](http://ionicframework.com/docs/guide/testing.html)
+
+You'll need to setup XCode with your developer provisioning profile in order to actually run it on your iPhone. Hit me up on Skype to work through that. `david.boskovic`
